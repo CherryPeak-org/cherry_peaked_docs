@@ -5,5 +5,15 @@ include: package:flutter_lints/flutter.yaml
 
 linter:
   rules:
+    - always_use_package_imports
     - always_declare_return_types
     - prefer_double_quotes
+    - prefer_void_to_null
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_const_declarations
+    - prefer_const_literals_to_create_immutables
+    - prefer_final_locals
+    - prefer_final_fields
+    - prefer_final_parameters
+    - prefer_final_in_for_each

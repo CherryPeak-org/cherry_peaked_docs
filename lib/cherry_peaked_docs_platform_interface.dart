@@ -1,6 +1,5 @@
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
-import 'cherry_peaked_docs_method_channel.dart';
+import "package:cherry_peaked_docs/cherry_peaked_docs_method_channel.dart";
+import "package:plugin_platform_interface/plugin_platform_interface.dart";
 
 abstract class CherryPeakedDocsPlatform extends PlatformInterface {
   /// Constructs a CherryPeakedDocsPlatform.
@@ -18,12 +17,12 @@ abstract class CherryPeakedDocsPlatform extends PlatformInterface {
   /// Platform-specific implementations should set this with their own
   /// platform-specific class that extends [CherryPeakedDocsPlatform] when
   /// they register themselves.
-  static set instance(CherryPeakedDocsPlatform instance) {
+  static set instance(final CherryPeakedDocsPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }
 
   Future<String?> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+    throw UnimplementedError("platformVersion() has not been implemented.");
   }
 }

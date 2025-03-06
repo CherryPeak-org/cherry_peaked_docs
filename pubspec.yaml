@@ -1,7 +1,7 @@
 name: cherry_peaked_docs
-description: "Native Mobile Document Scanner"
+description: "Document Scanner for Flutter Mobile"
 version: 0.0.1
-homepage: "https://cherrypeak.eu/"
+homepage: "https://github.com/CherryPeak-org/cherry_peaked_docs"
 
 environment:
   sdk: ^3.7.0
