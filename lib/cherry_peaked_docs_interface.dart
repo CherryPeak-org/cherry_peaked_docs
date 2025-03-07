@@ -1,4 +1,5 @@
 import "package:cherry_peaked_docs/cherry_peaked_docs_channel.dart";
+import "package:cherry_peaked_docs/cherry_peaked_docs_options.dart";
 import "package:plugin_platform_interface/plugin_platform_interface.dart";
 
 abstract class CherryPeakedDocsInterface extends PlatformInterface {
@@ -22,7 +23,11 @@ abstract class CherryPeakedDocsInterface extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String?> getPlatformVersion() {
-    throw UnimplementedError("getPlatformVersion() has not been implemented.");
+  Future<List<String>> startScanning(final CherryPeakedDocsOptions options) async {
+    throw UnimplementedError("startScanning() has not been implemented.");
+  }
+
+  Future<void> stopScanning() async {
+    throw UnimplementedError("stopScanning() has not been implemented.");
   }
 }

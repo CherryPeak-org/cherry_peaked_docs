@@ -1,19 +1,16 @@
-import "package:cherry_peaked_docs/cherry_peaked_docs_format.dart";
 import "package:path/path.dart" show join;
 import "package:path_provider/path_provider.dart" show getApplicationDocumentsDirectory;
 
 class CherryPeakedDocsOptions {
   final String path;
-  final CherryPeakedDocsFormat format;
   final int androidPageLimit;
   final bool isAndroidGalleryImportAllowed;
 
   CherryPeakedDocsOptions({
     required this.path,
-    required this.format,
     required this.androidPageLimit,
     required this.isAndroidGalleryImportAllowed,
-  });
+  }) : assert(!androidPageLimit.isNegative, "androidPageLimit MUST NOT be negative (set 0 for no limit)");
 
   static Future<CherryPeakedDocsOptions> platformMatching() async {
     final directory = await getApplicationDocumentsDirectory();
@@ -21,22 +18,27 @@ class CherryPeakedDocsOptions {
 
     return CherryPeakedDocsOptions(
       path: path,
-      format: CherryPeakedDocsFormat.jpg,
       // values below match iOS limitations
       androidPageLimit: 24,
       isAndroidGalleryImportAllowed: false,
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      "path": path,
+      "androidPageLimit": androidPageLimit,
+      "isAndroidGalleryImportAllowed": isAndroidGalleryImportAllowed,
+    };
+  }
+
   CherryPeakedDocsOptions copyWith({
     final String? path,
-    final CherryPeakedDocsFormat? format,
     final int? androidPageLimit,
     final bool? isAndroidGalleryImportAllowed,
   }) {
     return CherryPeakedDocsOptions(
       path: path ?? this.path,
-      format: format ?? this.format,
       androidPageLimit: androidPageLimit ?? this.androidPageLimit,
       isAndroidGalleryImportAllowed: isAndroidGalleryImportAllowed ?? this.isAndroidGalleryImportAllowed,
     );
@@ -48,13 +50,12 @@ class CherryPeakedDocsOptions {
         other is CherryPeakedDocsOptions &&
             runtimeType == other.runtimeType &&
             path == other.path &&
-            format == other.format &&
             androidPageLimit == other.androidPageLimit &&
             isAndroidGalleryImportAllowed == other.isAndroidGalleryImportAllowed;
   }
 
   @override
   int get hashCode {
-    return Object.hash(path, format, androidPageLimit, isAndroidGalleryImportAllowed);
+    return Object.hash(path, androidPageLimit, isAndroidGalleryImportAllowed);
   }
 }

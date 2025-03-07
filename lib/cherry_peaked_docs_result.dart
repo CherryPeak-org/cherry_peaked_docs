@@ -1,22 +1,18 @@
-import "package:cherry_peaked_docs/cherry_peaked_docs_format.dart";
+import "dart:io" show File;
 
 class CherryPeakedDocsResult {
-  final CherryPeakedDocsFormat format;
-  final List<String> paths;
+  final List<File> files;
 
-  CherryPeakedDocsResult({required this.format, required this.paths});
+  CherryPeakedDocsResult({required this.files});
 
   @override
   bool operator ==(final Object other) {
     return identical(this, other) ||
-        other is CherryPeakedDocsResult &&
-            runtimeType == other.runtimeType &&
-            format == other.format &&
-            paths == other.paths;
+        other is CherryPeakedDocsResult && runtimeType == other.runtimeType && files == other.files;
   }
 
   @override
   int get hashCode {
-    return Object.hash(format, paths);
+    return files.hashCode;
   }
 }
