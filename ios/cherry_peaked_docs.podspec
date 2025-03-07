@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
   spec.summary          = "Document Scanner for Flutter Mobile"
   spec.homepage         = "https://github.com/CherryPeak-org/cherry_peaked_docs"
   spec.license          = { :type => "MIT", :file => "../LICENSE" }
-  spec.author           = { "Samuel Kubinsky" => "samuel.kubinsky@cherrypeak.eu" }
+  spec.author           = { "Samuel Kubinský" => "samuel.kubinsky@cherrypeak.eu" }
   spec.source           = { :git => "https://github.com/CherryPeak-org/cherry_peaked_docs.git" } # Add TAG
   spec.source_files     = "cherry_peaked_docs/Sources/cherry_peaked_docs/**/*"
   spec.platform         = :ios, "13.0"

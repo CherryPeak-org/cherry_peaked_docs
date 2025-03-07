@@ -116,10 +116,12 @@ extension CherryPeakedDocsPlugin: VNDocumentCameraViewControllerDelegate {
             details: nsError.localizedDescription
         )
         result(flutterError)
+        stopScanning()
     }
     
     public func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
         result([])
+        stopScanning()
     }
     
     public func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
