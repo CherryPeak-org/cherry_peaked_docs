@@ -28,7 +28,7 @@ class CherryPeakedDocsPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, P
 
   private lateinit var channel: MethodChannel
   private var result: Result? = null
-  private var dirPath: String? = null
+  private var outputDirPath: String? = null
   private var activity: Activity? = null
 
   // ---------------------------
@@ -60,11 +60,11 @@ class CherryPeakedDocsPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, P
   // ---------------------------
 
   private fun startScanning(call: MethodCall) {
-    dirPath = call.argument<String>("path")
+    outputDirPath = call.argument<String>("path")
     val pageLimit = call.argument<Int>("androidPageLimit")
     val isGalleryImportAllowed = call.argument<Boolean>("isAndroidGalleryImportAllowed")
 
-    if (dirPath == null || pageLimit == null || isGalleryImportAllowed == null) {
+    if (outputDirPath == null || pageLimit == null || isGalleryImportAllowed == null) {
       result?.error("INVALID_ARGUMENTS",  "Missing or malformed arguments", null)
       return
     }
@@ -96,7 +96,11 @@ class CherryPeakedDocsPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, P
   private fun savePageFromUri(uri: Uri): String? {
     try {
       val inputStream = activity?.contentResolver?.openInputStream(uri)
-      val directory = File(dirPath!!)
+      if (inputStream == null) {
+        return null
+      }
+
+      val directory = File(outputDirPath!!)
 
       if (!directory.exists()) {
         directory.mkdirs()
@@ -106,22 +110,24 @@ class CherryPeakedDocsPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, P
       val file = File(directory, fileName)
       val outputStream = FileOutputStream(file)
 
-      inputStream?.use { input ->
+      inputStream.use { input ->
         outputStream.use { output ->
           input.copyTo(output)
         }
       }
 
+      inputStream.close()
+      outputStream.close()
+
       return file.absolutePath
     } catch (e: Exception) {
-
       e.printStackTrace()
       return null
     }
   }
 
   // ---------------------------
-  // Scan activity
+  // Scanner activity
   // ---------------------------
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -134,12 +140,11 @@ class CherryPeakedDocsPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, P
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-    activity = binding.activity
-    binding.addActivityResultListener(this)
+    onAttachedToActivity(binding)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
-    activity = null
+    onDetachedFromActivity()
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
@@ -152,7 +157,6 @@ class CherryPeakedDocsPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, P
       return true
     }
 
-    // Get scanning result
     val scanningResult = GmsDocumentScanningResult.fromActivityResultIntent(data)
     if (scanningResult == null) {
       result?.error("SCANNER_FAILED", "Scan result is null", null)
@@ -165,11 +169,11 @@ class CherryPeakedDocsPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, P
       return true
     }
 
-    val imagePaths = pages
+    val filePaths = pages
       .mapNotNull { page -> page.imageUri }
       .mapNotNull { uri -> savePageFromUri(uri) }
 
-    result?.success(imagePaths)
+    result?.success(filePaths)
     return true
   }
 }

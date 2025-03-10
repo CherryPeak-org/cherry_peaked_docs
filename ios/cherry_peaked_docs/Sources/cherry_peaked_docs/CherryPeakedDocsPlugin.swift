@@ -1,5 +1,5 @@
 //
-//  CherryPeakedDocsPage.swift
+//  CherryPeakedDocsPlugin.swift
 //  cherry_peaked_docs
 //
 //  Created by Samuel Kubinský on 06/03/2025.
@@ -9,11 +9,12 @@ import Flutter
 import VisionKit
 
 public class CherryPeakedDocsPlugin: NSObject {
-    private var rootViewController: UIViewController {
-        UIApplication.shared.keyWindow!.rootViewController!
+    private var rootViewController: UIViewController? {
+        UIApplication.shared.keyWindow?.rootViewController
     }
-    private var result: FlutterResult!
-    private var dirPath = ""
+    
+    private var result: FlutterResult?
+    private var outputDirPath: String?
 }
 
 // MARK: - Bridge
@@ -24,13 +25,17 @@ extension CherryPeakedDocsPlugin: FlutterPlugin {
         let instance = CherryPeakedDocsPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
+    
+    public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
+        result = nil
+    }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         self.result = result
         
         switch call.method {
             case "startScanning":
-                startScanning(args: call.arguments)
+                startScanning(call)
             case "stopScanning":
                 stopScanning()
             default:
@@ -42,64 +47,54 @@ extension CherryPeakedDocsPlugin: FlutterPlugin {
 // MARK: - Native
 
 extension CherryPeakedDocsPlugin {
-    private func startScanning(args: Any?) {
-        guard
-            let dict = args as? [String: Any],
-            let path = dict["path"] as? String
-        else {
-            let flutterError = FlutterError(
-                code: "INVALID_ARGUMENTS",
-                message: "Missing or malformed arguments",
-                details: nil
+    private func startScanning(_ call: FlutterMethodCall) {
+        let arguments = call.arguments as? [String: Any]
+        outputDirPath = arguments?["path"] as? String
+        
+        guard outputDirPath != nil else {
+            result?(
+                FlutterError(
+                    code: "INVALID_ARGUMENTS",
+                    message: "Missing or malformed arguments",
+                    details: nil
+                )
             )
-            result(flutterError)
             return
         }
         
-        self.dirPath = path
-        
         let documentScannerViewController = VNDocumentCameraViewController()
         documentScannerViewController.delegate = self
-        rootViewController.present(documentScannerViewController, animated: true)
+        rootViewController?.present(documentScannerViewController, animated: true)
     }
     
     private func stopScanning() {
-        rootViewController.dismiss(animated: true)
+        rootViewController?.dismiss(animated: true)
     }
     
-    private func savePagesToDisk(_ pages: [CherryPeakedDocsPage]) {
+    private func savePage(image: UIImage) -> String? {
         do {
-            var filePaths = [String]()
-            
-            let dirExists = FileManager.default.fileExists(atPath: dirPath)
+            let fileManager = FileManager.default
+            let dirExists = fileManager.fileExists(atPath: outputDirPath!)
             
             if !dirExists {
-                try FileManager.default.createDirectory(atPath: dirPath, withIntermediateDirectories: true)
+                try fileManager.createDirectory(atPath: outputDirPath!, withIntermediateDirectories: true)
             }
             
-            for page in pages {
-                let filePath = "\(dirPath)/\(page.id).jpg"
-                
-                guard
-                    let fileURL = URL(string: "file://\(filePath)"),
-                    let imageData = page.image.jpegData(compressionQuality: 1)
-                else {
-                    continue
-                }
+            let filePath = "\(outputDirPath!)/\(UUID().uuidString).jpg"
+            
+            guard
+                let fileURL = URL(string: "file://\(filePath)"),
+                let imageData = image.jpegData(compressionQuality: 1)
+            else {
+                return nil
+            }
 
-                try imageData.write(to: fileURL, options: .atomic)
-                filePaths.append(filePath)
-            }
+            try imageData.write(to: fileURL, options: .atomic)
             
-            result(filePaths)
+            return filePath
         } catch {
-            let nsError = error as NSError
-            let flutterError = FlutterError(
-                code: "WRITE_TO_DISK_FAILED",
-                message: nsError.localizedFailureReason,
-                details: nsError.localizedDescription
-            )
-            result(flutterError)
+            print(error.localizedDescription)
+            return nil
         }
     }
 }
@@ -109,24 +104,26 @@ extension CherryPeakedDocsPlugin {
 
 extension CherryPeakedDocsPlugin: VNDocumentCameraViewControllerDelegate {
     public func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFailWithError error: any Error) {
-        let nsError = error as NSError
-        let flutterError = FlutterError(
-            code: "SCANNER_FAILED",
-            message: nsError.localizedFailureReason,
-            details: nsError.localizedDescription
+        result?(
+            FlutterError(
+                code: "SCANNER_FAILED",
+                message: error.localizedDescription,
+                details: nil
+            )
         )
-        result(flutterError)
         stopScanning()
     }
     
     public func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
-        result([])
+        result?([])
         stopScanning()
     }
     
     public func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
-        let pages = CherryPeakedDocsPage.extractFrom(scan)
-        savePagesToDisk(pages)
+        let imagePaths = (0 ..< scan.pageCount)
+            .map(scan.imageOfPage)
+            .compactMap(savePage)
+        result?(imagePaths)
         stopScanning()
     }
 }

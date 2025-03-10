@@ -14,7 +14,7 @@ class CherryPeakedDocsOptions {
 
   static Future<CherryPeakedDocsOptions> platformMatching() async {
     final directory = await getApplicationDocumentsDirectory();
-    final path = join(directory.path, "cherry-peaked-docs");
+    final path = join(directory.path, "scans");
 
     return CherryPeakedDocsOptions(
       path: path,

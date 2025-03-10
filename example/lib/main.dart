@@ -39,7 +39,7 @@ class _MyAppState extends State<MyApp> {
 
     final scanButton = TextButton(onPressed: _onButtonPressed, child: const Text("Scan"));
 
-    final appBar = AppBar(title: const Text("CherryPeakedDocs"), actions: [scanButton]);
+    final appBar = AppBar(title: const Text("CherryPeakedDocs"), centerTitle: false, actions: [scanButton]);
 
     final scrollView = Scrollbar(
       child: ListView.separated(

@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
-        android:label="cherry_peaked_docs_example"
+        android:label="CherryPeakedDocs"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
