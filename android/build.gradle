@@ -64,3 +64,8 @@ android {
         }
     }
 }
+
+dependencies {
+    // https://developers.google.com/ml-kit/vision/doc-scanner/android
+    implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
+}
