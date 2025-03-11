@@ -6,13 +6,13 @@ class CherryPeakedDocsOptions {
   final String path;
   final int androidPageLimit;
   final bool isAndroidGalleryImportAllowed;
-  final Color iosAccentColor;
+  final Color? iosAccentColor;
 
   CherryPeakedDocsOptions({
     required this.path,
     required this.androidPageLimit,
     required this.isAndroidGalleryImportAllowed,
-    required this.iosAccentColor,
+    this.iosAccentColor,
   }) : assert(!androidPageLimit.isNegative, "androidPageLimit MUST NOT be negative (set 0 for no limit)");
 
   static Future<CherryPeakedDocsOptions> platformMatching() async {
@@ -21,9 +21,9 @@ class CherryPeakedDocsOptions {
 
     return CherryPeakedDocsOptions(
       path: path,
-      androidPageLimit: 24, // iOS limitation
-      isAndroidGalleryImportAllowed: false, // iOS limitation
-      iosAccentColor: const Color(0xFF1456BF), // Android limitation
+      // values below are iOS limitations
+      androidPageLimit: 24,
+      isAndroidGalleryImportAllowed: false,
     );
   }
 
@@ -32,7 +32,7 @@ class CherryPeakedDocsOptions {
       "path": path,
       "androidPageLimit": androidPageLimit,
       "isAndroidGalleryImportAllowed": isAndroidGalleryImportAllowed,
-      "iosAccentColor": [iosAccentColor.r, iosAccentColor.g, iosAccentColor.b],
+      "iosAccentColor": iosAccentColor == null ? null : [iosAccentColor!.r, iosAccentColor!.g, iosAccentColor!.b],
     };
   }
 
