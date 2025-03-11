@@ -8,11 +8,10 @@
 import Flutter
 import VisionKit
 
+typealias Arguments = [String: Any]
+
 public class CherryPeakedDocsPlugin: NSObject {
-    private var rootViewController: UIViewController? {
-        UIApplication.shared.keyWindow?.rootViewController
-    }
-    
+    private var window: UIWindow? { UIApplication.shared.keyWindow }
     private var result: FlutterResult?
     private var outputDirPath: String?
 }
@@ -31,11 +30,13 @@ extension CherryPeakedDocsPlugin: FlutterPlugin {
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        let args = call.arguments as? Arguments
         self.result = result
         
         switch call.method {
             case "startScanning":
-                startScanning(call)
+                updateAccentColor(args)
+                startScanning(args)
             case "forceStopScanning":
                 forceStopScanning()
             default:
@@ -47,9 +48,26 @@ extension CherryPeakedDocsPlugin: FlutterPlugin {
 // MARK: - Native
 
 extension CherryPeakedDocsPlugin {
-    private func startScanning(_ call: FlutterMethodCall) {
-        let arguments = call.arguments as? [String: Any]
-        outputDirPath = arguments?["path"] as? String
+    private func updateAccentColor(_ args: Arguments?) {
+        let components = args?["iosAccentColor"] as? [CGFloat]
+        let color: UIColor?
+        
+        if let components, components.count == 3 {
+            color = UIColor(
+                red: components[0],
+                green: components[1],
+                blue: components[2],
+                alpha: 1
+            )
+        } else {
+            color = nil
+        }
+        
+        window?.tintColor = color
+    }
+    
+    private func startScanning(_ args: Arguments?) {
+        outputDirPath = args?["path"] as? String
         
         guard outputDirPath != nil else {
             result?(
@@ -64,11 +82,11 @@ extension CherryPeakedDocsPlugin {
         
         let documentScannerViewController = VNDocumentCameraViewController()
         documentScannerViewController.delegate = self
-        rootViewController?.present(documentScannerViewController, animated: true)
+        window?.rootViewController?.present(documentScannerViewController, animated: true)
     }
     
     private func forceStopScanning() {
-        rootViewController?.dismiss(animated: true)
+        window?.rootViewController?.dismiss(animated: true)
     }
     
     private func savePage(image: UIImage) -> String? {

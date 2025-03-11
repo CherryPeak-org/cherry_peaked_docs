@@ -1,3 +1,4 @@
+import "package:flutter/material.dart" show Color;
 import "package:path/path.dart" show join;
 import "package:path_provider/path_provider.dart" show getApplicationDocumentsDirectory;
 
@@ -5,11 +6,13 @@ class CherryPeakedDocsOptions {
   final String path;
   final int androidPageLimit;
   final bool isAndroidGalleryImportAllowed;
+  final Color iosAccentColor;
 
   CherryPeakedDocsOptions({
     required this.path,
     required this.androidPageLimit,
     required this.isAndroidGalleryImportAllowed,
+    required this.iosAccentColor,
   }) : assert(!androidPageLimit.isNegative, "androidPageLimit MUST NOT be negative (set 0 for no limit)");
 
   static Future<CherryPeakedDocsOptions> platformMatching() async {
@@ -18,9 +21,9 @@ class CherryPeakedDocsOptions {
 
     return CherryPeakedDocsOptions(
       path: path,
-      // values below match iOS limitations
-      androidPageLimit: 24,
-      isAndroidGalleryImportAllowed: false,
+      androidPageLimit: 24, // iOS limitation
+      isAndroidGalleryImportAllowed: false, // iOS limitation
+      iosAccentColor: const Color(0xFF1456BF), // Android limitation
     );
   }
 
@@ -29,6 +32,7 @@ class CherryPeakedDocsOptions {
       "path": path,
       "androidPageLimit": androidPageLimit,
       "isAndroidGalleryImportAllowed": isAndroidGalleryImportAllowed,
+      "iosAccentColor": [iosAccentColor.r, iosAccentColor.g, iosAccentColor.b],
     };
   }
 
@@ -36,11 +40,13 @@ class CherryPeakedDocsOptions {
     final String? path,
     final int? androidPageLimit,
     final bool? isAndroidGalleryImportAllowed,
+    final Color? iosAccentColor,
   }) {
     return CherryPeakedDocsOptions(
       path: path ?? this.path,
       androidPageLimit: androidPageLimit ?? this.androidPageLimit,
       isAndroidGalleryImportAllowed: isAndroidGalleryImportAllowed ?? this.isAndroidGalleryImportAllowed,
+      iosAccentColor: iosAccentColor ?? this.iosAccentColor,
     );
   }
 
@@ -51,11 +57,12 @@ class CherryPeakedDocsOptions {
             runtimeType == other.runtimeType &&
             path == other.path &&
             androidPageLimit == other.androidPageLimit &&
-            isAndroidGalleryImportAllowed == other.isAndroidGalleryImportAllowed;
+            isAndroidGalleryImportAllowed == other.isAndroidGalleryImportAllowed &&
+            iosAccentColor == other.iosAccentColor;
   }
 
   @override
   int get hashCode {
-    return Object.hash(path, androidPageLimit, isAndroidGalleryImportAllowed);
+    return Object.hash(path, androidPageLimit, isAndroidGalleryImportAllowed, iosAccentColor);
   }
 }
