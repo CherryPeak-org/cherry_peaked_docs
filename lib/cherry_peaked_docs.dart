@@ -12,7 +12,7 @@ abstract class CherryPeakedDocs {
     return CherryPeakedDocsResult(files: files);
   }
 
-  static Future<void> stopScanning() async {
-    await CherryPeakedDocsInterface.instance.stopScanning();
+  static Future<void> forceStopScanning() async {
+    await CherryPeakedDocsInterface.instance.forceStopScanning();
   }
 }

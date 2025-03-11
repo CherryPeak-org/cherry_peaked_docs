@@ -27,7 +27,7 @@ abstract class CherryPeakedDocsInterface extends PlatformInterface {
     throw UnimplementedError("startScanning() has not been implemented.");
   }
 
-  Future<void> stopScanning() async {
-    throw UnimplementedError("stopScanning() has not been implemented.");
+  Future<void> forceStopScanning() async {
+    throw UnimplementedError("forceStopScanning() has not been implemented.");
   }
 }

@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |spec|
   spec.name             = "cherry_peaked_docs"
-  spec.version          = "0.0.1"
+  spec.version          = "0.8.0"
   spec.summary          = "Document Scanner for Flutter Mobile"
   spec.homepage         = "https://github.com/CherryPeak-org/cherry_peaked_docs"
   spec.license          = { :type => "MIT", :file => "../LICENSE" }

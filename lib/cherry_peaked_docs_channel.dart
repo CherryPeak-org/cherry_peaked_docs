@@ -17,7 +17,7 @@ class CherryPeakedDocsChannel extends CherryPeakedDocsInterface {
   }
 
   @override
-  Future<void> stopScanning() async {
-    await methodChannel.invokeMethod<void>("stopScanning");
+  Future<void> forceStopScanning() async {
+    await methodChannel.invokeMethod<void>("forceStopScanning");
   }
 }

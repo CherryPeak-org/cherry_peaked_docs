@@ -50,7 +50,7 @@ class CherryPeakedDocsPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, P
 
     when (call.method) {
       "startScanning" -> startScanning(call)
-      "stopScanning" -> stopScanning()
+      "forceStopScanning" -> forceStopScanning()
       else -> result.notImplemented()
     }
   }
@@ -89,8 +89,10 @@ class CherryPeakedDocsPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, P
       }
   }
 
-  private fun stopScanning() {
-    activity?.finishActivity(SCANNER_REQUEST_CODE)
+  private fun forceStopScanning() {
+    val intent = Intent(activity, activity?.javaClass)
+    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+    activity?.startActivity(intent)
   }
 
   private fun savePageFromUri(uri: Uri): String? {

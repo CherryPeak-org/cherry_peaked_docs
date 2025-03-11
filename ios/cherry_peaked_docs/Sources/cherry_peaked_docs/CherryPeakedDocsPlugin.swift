@@ -36,8 +36,8 @@ extension CherryPeakedDocsPlugin: FlutterPlugin {
         switch call.method {
             case "startScanning":
                 startScanning(call)
-            case "stopScanning":
-                stopScanning()
+            case "forceStopScanning":
+                forceStopScanning()
             default:
                 result(FlutterMethodNotImplemented)
         }
@@ -67,7 +67,7 @@ extension CherryPeakedDocsPlugin {
         rootViewController?.present(documentScannerViewController, animated: true)
     }
     
-    private func stopScanning() {
+    private func forceStopScanning() {
         rootViewController?.dismiss(animated: true)
     }
     
@@ -111,12 +111,12 @@ extension CherryPeakedDocsPlugin: VNDocumentCameraViewControllerDelegate {
                 details: nil
             )
         )
-        stopScanning()
+        forceStopScanning()
     }
     
     public func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
         result?([])
-        stopScanning()
+        forceStopScanning()
     }
     
     public func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
@@ -124,6 +124,6 @@ extension CherryPeakedDocsPlugin: VNDocumentCameraViewControllerDelegate {
             .map(scan.imageOfPage)
             .compactMap(savePage)
         result?(imagePaths)
-        stopScanning()
+        forceStopScanning()
     }
 }
